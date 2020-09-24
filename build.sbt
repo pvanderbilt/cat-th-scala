@@ -7,3 +7,11 @@ lazy val hello = (project in file("."))
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0" % "test",
   )
 
+scalacOptions := Seq("-unchecked", "-deprecation")
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
+// ThisBuild / watchTriggers := Seq(Glob("src/main/scala/category/[^#].*"))
+
+// ThisBuild  / watchBeforeCommand := Watch.clearScreen
+
+// watchSources := watchSources.value.filter { !_.getName.startsWith(".#") }
