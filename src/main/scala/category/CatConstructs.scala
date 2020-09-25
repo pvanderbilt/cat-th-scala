@@ -15,6 +15,7 @@ class Dual (val c: Category) extends Category {
   def comp = { case (g, f) => c.comp(f, g) };
 }
 
+
 /*
  *  Product category
  */
@@ -27,6 +28,7 @@ class ProdCat (val c1: Category, val c2: Category) extends Category {
   def id   = { case (x1, x2) => (c1.id(x1), c2.id(x2)) };
   def comp = { case ((g1, g2), (f1, f2)) => (c1.comp(g1, f1), c2.comp(g2, f2)) };
 }
+
 
 /*
  *  ISSUES with ProdFinCat
@@ -58,20 +60,15 @@ class ProdFinCat2 (val c1: SCategory, val c2: SCategory) extends SCategory  {
   val arrows  : Set[TArr] = for {a1 <- c1.arrows; a2 <- c2.arrows} yield (a1, a2)
 }
 
- 
-
-
 
 /*
  *  Diagonal categories
  */
 
-// ERROR:
-//  Objects should only be (a, a) pairs but how do we express this?
+// ISSUE: Objects should only be (a, a) pairs but how do we express this?
 class DiagCat (val c: Category) extends ProdCat(c, c) {}
 
-// ERROR with next: I can't get the overrides to type
-
+// ERROR with DiagFCat: I can't get the overrides to type
 class DiagFCat (val d: SCategory) extends ProdFinCat(d, d) {
   override val c1 = d
   override val c2 = d
@@ -79,6 +76,7 @@ class DiagFCat (val d: SCategory) extends ProdFinCat(d, d) {
   //override val objects : Set[TObj] = for {o <- d.objects} yield ((o : c1.TObj), o)
  // override val arrows  : Set[TArr] = for {a <- d.arrows}  yield (a, a)
 }
+
 
 /*
  * Diagonal category for finite categories
@@ -94,4 +92,3 @@ class DiagFCat2 (val c: SCategory) extends SCategory {
   val objects = c.objects.map(x => (x, x));
   val arrows  = c.arrows.map(f => (f, f));
 }
-

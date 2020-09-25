@@ -117,6 +117,8 @@ trait SCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
 
 }
  */
+
+
 class FinCatSpec extends AnyFunSuite with FinCatTests {
   testsFor(verify_finite_category(cat323, "cat323"));
   testsFor(verify_finite_category(cat323b, "cat323b"));

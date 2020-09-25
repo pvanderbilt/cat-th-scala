@@ -21,6 +21,7 @@ class FinSetCat [A] extends Category with CatWithInitial {
   override def io_univ = (s: this.TObj) => (initialObj, (x: A) => x, s);
 } 
 
+
 /*
  * The following objects implement the finite category of CCT section 3.2.2
  */
@@ -69,6 +70,7 @@ object cat323 extends SCategory {
   }
 }
 
+
 /* 
  *  Alternate version using StringFinCat
  */
@@ -90,6 +92,11 @@ object cat323b extends StringFinCat {
     ("c", "c", "c")
   );
 }
+
+
+/* 
+ *  Alternate version using SimpleFinCat
+ */
 
 object cat323c extends SimpleFinCat {
   type ObjId = String;

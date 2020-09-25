@@ -17,6 +17,7 @@ trait Category {
   def comp: (TArr, TArr) => TArr;
 }
 
+
 /*
  * FiniteCat: A category with finite sets of objects and arrows
  *     In particular, these categories have terminating iterators for both objects and arrows.
@@ -31,12 +32,14 @@ trait FiniteCat extends Category {
   def arrContains: TArr => Boolean;
 } 
 
+
 /*
  * SCategory: A finite category that has Scala sets for both objects and arrows
  *   Think of these sets as subtypes of TObj and TArr
  * An implementation should define `TObj` and `TArr` 
  *   and `objects: Set[TObj]` and `arrows: Set[TArr]`
  */
+
 trait SCategory extends FiniteCat {
   val objects: Set[TObj];
   val arrows:  Set[TArr];
@@ -47,6 +50,7 @@ trait SCategory extends FiniteCat {
   def arrContains = arrows.contains;
 }
 
+
 /*
  * SimpleFinCat
  *   `objects` is a set of identifiers (of abstract type ObjId)
@@ -55,7 +59,6 @@ trait SCategory extends FiniteCat {
  *      any arrows needed for closure.
  */
  
-
 trait SimpleFinCat extends SCategory {
   type ObjId;
   type ArrId;
@@ -69,6 +72,7 @@ trait SimpleFinCat extends SCategory {
   override def id = (s: TObj) => (s, List(), s);
   override def comp = (g: TArr, f: TArr) => (dom(f), f._2 ++ g._2, cod(g))
  }
+
 
 /*
  * StringFinCat
