@@ -18,3 +18,10 @@ trait CatWithInitial extends Category {
   }
 }
 
+/* The following definition isn't very useful */
+trait InitialObj {
+  val C: Category
+  val io: C.TObj;
+  def outArr: this.C.TObj => this.C.TArr;
+}
+

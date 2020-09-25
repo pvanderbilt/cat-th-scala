@@ -26,7 +26,7 @@ class ProdCat (val c1: Category, val c2: Category) extends Category {
  *       (Renaming cp1 parameters to c1 just makes the error message more mysterious).
  */
 
-class ProdFinCat ( cp1: FiniteCat,  cp2: FiniteCat) extends ProdCat(cp1, cp2) with FiniteCat {
+class ProdFinCat ( cp1: SCategory,  cp2: SCategory) extends ProdCat(cp1, cp2) with SCategory {
   override val c1 = cp1
   override val c2 = cp2
   val objects : Set[TObj] = for {o1 <- c1.objects; o2 <- c2.objects} yield (o1, o2)
@@ -34,7 +34,7 @@ class ProdFinCat ( cp1: FiniteCat,  cp2: FiniteCat) extends ProdCat(cp1, cp2) wi
 
 }
 
-class ProdFinCat2 (val c1: FiniteCat, val c2: FiniteCat) extends FiniteCat  {
+class ProdFinCat2 (val c1: SCategory, val c2: SCategory) extends SCategory  {
   type TObj = (c1.TObj, c2.TObj)
   type TArr = (c1.TArr, c2.TArr)
   def dom  = { case (a1, a2) => (c1.dom(a1), c2.dom(a2)) };
@@ -59,7 +59,7 @@ class DiagCat (val c: Category) extends ProdCat(c, c) {}
 
 // ERROR with next: I can't get the overrides to type
 
-class DiagFCat (val d: FiniteCat) extends ProdFinCat(d, d) {
+class DiagFCat (val d: SCategory) extends ProdFinCat(d, d) {
   override val c1 = d
   override val c2 = d
   //override val objects : Set[(d.TObj, d.TObj)] = for {o <- d.objects} yield (o, o)
@@ -71,7 +71,7 @@ class DiagFCat (val d: FiniteCat) extends ProdFinCat(d, d) {
  * Diagonal category for finite categories
  */
 
-class DiagFCat2 (val c: FiniteCat) extends FiniteCat {
+class DiagFCat2 (val c: SCategory) extends SCategory {
   type TObj = (c.TObj, c.TObj)
   type TArr = (c.TArr, c.TArr)
   def dom  = { case (a1, a2) => (c.dom(a1), c.dom(a2)) };

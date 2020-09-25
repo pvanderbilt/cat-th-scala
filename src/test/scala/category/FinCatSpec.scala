@@ -7,30 +7,87 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
 
   def verify_finite_category(c: FiniteCat, name: String) = {
 
+    test(name ++ ": Check iterators") {
+      c.objIter.foreach(obj => assert(c.objContains(obj)));
+      c.arrIter.foreach(arr => assert(c.arrContains(arr)));
+    }
+
     test(name ++ ": Test id objects") {
-      c.objects.foreach(obj => {
+      c.objIter.foreach(obj => {
         val idObj : c.TArr = c.id(obj);
-        Given(s"c.id($obj) = $idObj, check containment and ends")
-        assert(c.arrows.contains(idObj));
+        // info(s"  Check: c.id($obj) \t= $idObj")
+        assert(c.arrContains(idObj));
         assert(c.dom(idObj) === obj);
         assert(c.cod(idObj) === obj);
       })
     }
 
     test(name ++ ": Test identity laws") {
-      c.arrows.foreach(arr => {
-        Given(s"an arrow $arr : ${c.dom(arr)}->${c.cod(arr)}, check composition with ids")
+      c.arrIter.foreach(arr => {
+        // info(s"  Check: ${arr} : ${c.dom(arr)}->${c.cod(arr)}")
         assert(c.comp(arr, c.id(c.dom(arr))) === arr);
         assert(c.comp(c.id(c.cod(arr)), arr) === arr);
       })
     }
 
     test(name ++ ": Test composition") {
+      c.arrIter.foreach(f =>
+        c.arrIter.foreach(g =>
+          if (c.cod(f) == c.dom(g)) {
+            val res = c.comp(g, f);
+            // info(s"  Check: comp($g, $f) \t= $res");
+            assert(c.arrContains(res));
+            assert(c.dom(res) === c.dom(f));
+            assert(c.cod(res) === c.cod(g));
+          }
+        )
+      )
+    }
+
+    test(name ++ ": Test asociativity") {
+      c.arrIter.foreach(f =>
+        c.arrIter.foreach(g =>
+          c.arrIter.foreach(h =>
+            if (c.cod(f) == c.dom(g) && c.cod(g) == c.dom(h)) {
+              assert(c.comp(h, c.comp(g, f)) == c.comp(c.comp(h, g), f))
+            }
+          )
+        )
+      )
+    }
+
+  }
+
+}
+/*
+trait SCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
+
+  def verify_finite_category(c: SCategory, name: String) = {
+
+    test(name ++ ": Test id objects (check containment and ends)") {
+      c.objects.foreach(obj => {
+        val idObj : c.TArr = c.id(obj);
+        // info(s"Check: c.id($obj) \t= $idObj")
+        assert(c.arrows.contains(idObj));
+        assert(c.dom(idObj) === obj);
+        assert(c.cod(idObj) === obj);
+      })
+    }
+
+    test(name ++ ": Test identity laws (check composition of each arrow with ids)") {
+      c.arrows.foreach(arr => {
+        // info(s"Check: ${arr} : ${c.dom(arr)}->${c.cod(arr)}")
+        assert(c.comp(arr, c.id(c.dom(arr))) === arr);
+        assert(c.comp(c.id(c.cod(arr)), arr) === arr);
+      })
+    }
+
+    test(name ++ ": Test composition (check containment and ends)") {
       c.arrows.foreach(f =>
         c.arrows.foreach(g =>
           if (c.cod(f) == c.dom(g)) {
             val res = c.comp(g, f);
-            Given(s"comp($g, $f) = $res, check containment and ends");
+            // info(s"Check: comp($g, $f) \t= $res");
             assert(c.arrows.contains(res));
             assert(c.dom(res) === c.dom(f));
             assert(c.cod(res) === c.cod(g));
@@ -44,8 +101,9 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
   }
 
 }
-
+ */
 class FinCatSpec extends AnyFunSuite with FinCatTests {
   testsFor(verify_finite_category(cat323, "cat323"));
   testsFor(verify_finite_category(cat323b, "cat323b"));
+  testsFor(verify_finite_category(cat323c, "cat323c"));
 }

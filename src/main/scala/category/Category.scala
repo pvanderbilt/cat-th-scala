@@ -2,6 +2,10 @@ package category
 
 /*
  * Basic Category definition
+ *    `TObj` and `TArr` are the Scala base types for object and arrows.
+ *    A given category's objects may be all of TObj or some subset drawn from TObj;
+ *    similarly for arrows.
+ *    The remaining operations are those for the category.
  */
 
 trait Category {
@@ -14,34 +18,76 @@ trait Category {
 }
 
 /*
- * FiniteCat: A category that has finite sets for both objects and arrows
+ * FiniteCat: A category with finite sets of objects and arrows
+ *     In particular, these categories have terminating iterators for both objects and arrows.
+ *     They also have methods for checking containment. (The object one isn't used currently)   
+ *   The fact that the objects and arrows are finite permits exhautive testing.
+ */
+
+trait FiniteCat extends Category {
+  def objIter: Iterator[TObj];
+  def arrIter: Iterator[TArr];
+  def objContains: TObj => Boolean;
+  def arrContains: TArr => Boolean;
+} 
+
+/*
+ * SCategory: A finite category that has Scala sets for both objects and arrows
  *   Think of these sets as subtypes of TObj and TArr
- *   The fact that there are sets permits exhautive testing
  * An implementation should define `TObj` and `TArr` 
  *   and `objects: Set[TObj]` and `arrows: Set[TArr]`
  */
-trait FiniteCat extends Category {
+trait SCategory extends FiniteCat {
   val objects: Set[TObj];
   val arrows:  Set[TArr];
+  // Implement FiniteCat methods
+  def objIter = objects.iterator;
+  def arrIter = arrows.iterator;
+  def objContains = objects.contains;
+  def arrContains = arrows.contains;
 }
- 
+
 /*
- * StringFCat
+ * SimpleFinCat
+ *   `objects` is a set of identifiers (of abstract type ObjId)
+ *   `arrows` is a set of (dom, List[ArrId], cod) triples (for abstract type ArrId)
+ *      The `arrows` set should include the identity arrows of the form (o, o, o) for each object o
+ *      any arrows needed for closure.
+ */
+ 
+
+trait SimpleFinCat extends SCategory {
+  type ObjId;
+  type ArrId;
+  // Define Category's TObj and TArr as discussed
+  override type TObj = ObjId;
+  override type TArr = (ObjId, List[ArrId], ObjId);
+  // Inherit abstract `objects: Set[ObjId]` and `arrows: Set[(ObjId, Seq[ArrId], ObjId)]`
+  // Implement Category's abstract methods
+  override def dom = (arr: TArr) => arr._1;
+  override def cod = (arr: TArr) => arr._3;
+  override def id = (s: TObj) => (s, List(), s);
+  override def comp = (g: TArr, f: TArr) => (dom(f), f._2 ++ g._2, cod(g))
+ }
+
+/*
+ * StringFinCat
  *   `objects` is a set of strings
  *   `arrows` is a set of (dom, name, cod) triples, including
  *     the identity arrows of the form (o, o, o) for each object o
- *     any arrows needed for closure
+ *     any arrows needed for closure.
+ *   (This is an older trait superceeded by the above)
  */
 
-trait StringFinCat extends FiniteCat {
-  //type ObjBase = String;
-  //type ArrBase = String;
- // val objects: Set[String];
-  //val arrows: Set[(String, String, String)];
-  def arrName(arr: TArr) = arr._2;
-  def getArr(name: String) = arrows.find(arr => arr._2 == name);
+trait StringFinCat extends SCategory {
+  // Define Category's TObj and TArr as discussed
   override type TObj = String;
   override type TArr = (String, String, String);
+  // Inherits `objects: Set[T]` and `arrows: Set[(String, String, String)]`
+  // Define a couple of helper functions
+  def arrName(arr: TArr) = arr._2;
+  def getArr(name: String) = arrows.find(arr => arr._2 == name);
+  // Implement Category's abstract methods
   override def dom = (arr: TArr) => arr._1;
   override def cod = (arr: TArr) => arr._3;
   override def id = (s: TObj) => (s, s, s);
@@ -56,44 +102,3 @@ trait StringFinCat extends FiniteCat {
     else ("", "*ERROR*", "")
   }
  }
-
-
-
-
-// ********* Stuff not using any more *********
-
-//  def ccomp(g: TArr, f: TArr): Option[TArr] =
-//    if (cod(f) != dom(g)) None else Some(comp(g,f)) ;
-
-trait FinSet1 [TObjBase] extends Category {
-  type TObj <: TObjBase;
-  type TArr <: TObjBase => TObjBase;
-  def iterTObj: Iterator[TObj];
-  def iterTArr: Iterator[TArr];
-//  def comp: PartialFunction[(TArr, TArr), TArr];
-} 
-
-
-trait InitialObj {
-  val C: Category
-  val io: C.TObj;
-  def outArr: this.C.TObj => this.C.TArr;
-}
-
-trait Junk extends Category {
-  // checked versions of some operations
-  def id_chkd(x: TObj): TArr = {
-    val res = id(x);
-    require (dom(res) == x, "id domain check failed");
-    require (cod(res) == x, "id codomain check failed");
-    return res
-  }
-
-  def comp_chkd(g: TArr, f: TArr): TArr = {
-    require (cod(f) == dom(g));
-    val res = comp(g, f)
-    require (dom(res) == dom(f), "comp domain check failed");
-    require (cod(res) == cod(g), "comp codomain check failed");
-    return res;
-  }
-}

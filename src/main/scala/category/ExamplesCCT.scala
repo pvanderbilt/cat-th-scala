@@ -2,7 +2,30 @@ package category
 
 import category.Category
 
-object cat323 extends FiniteCat {
+/*
+ * FinSetCat[A]
+ *   This corresponds to CCT's code of section 3.4.1
+ *   `TObj` denotes sets of values of type A
+ *   `TArr` denotes a set of (dom, A => A, cod) triples
+ */
+
+class FinSetCat [A] extends Category with CatWithInitial {
+  override type TObj = Set[A];
+  override type TArr = (TObj, A => A, TObj);
+  override def dom = (arr: TArr) => arr._1;
+  override def cod = (arr: TArr) => arr._3;
+  override def id = (s: TObj) => (s, (x: A) => x, s);
+  override def comp = { case((gd, gf, gc), (fd, ff, fc)) => (fd, ff.andThen(gf), gc) }
+  // Initial object
+  override val initialObj = Set[A]();
+  override def io_outArr = (s: this.TObj) => (initialObj, (x: A) => x, s);
+} 
+
+/*
+ * The following objects implement the finite category of CCT section 3.2.2
+ */
+
+object cat323 extends SCategory {
   override type TObj = String;
   override type TArr = String;
   val objects = Set("a", "b", "c");
@@ -66,4 +89,22 @@ object cat323b extends StringFinCat {
     ("b", "b", "b"),
     ("c", "c", "c")
   );
+}
+
+object cat323c extends SimpleFinCat {
+  type ObjId = String;
+  type ArrId = String;
+  val objects = Set("a", "b", "c");
+  val baseArrows = Set[(String, String, String)](
+    // from diagram
+    ("b", "f", "a"),
+    ("a", "g", "c"),
+    ("a", "h", "c"),
+    ("b", "k", "c"),
+    // closure
+    ("b", "f;g", "c"),
+    ("b", "f;h", "c"));
+  val arrows = baseArrows.map { case (d, f, c) => (d, List(f), c) } ++
+               objects.map { case obj => (obj, List(), obj) } ++
+               Set(("b", List("f","g"), "c"), ("b", List("f","h"), "c"));
 }
