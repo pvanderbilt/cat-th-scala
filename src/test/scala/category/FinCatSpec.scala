@@ -44,7 +44,7 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
       )
     }
 
-    test(name ++ ": Test asociativity") {
+    test(name ++ ": Test associativity") {
       c.arrIter.foreach(f =>
         c.arrIter.foreach(g =>
           c.arrIter.foreach(h =>
@@ -55,10 +55,25 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
         )
       )
     }
+  }
 
+  def verify_CatWithInitial(c: CatWithInitial with FiniteCat, name: String) = {
+
+    test(name ++ ": Check out arrows of initial object") {
+      c.objIter.foreach(obj => {
+        val outArr = c.io_univ(obj);
+        assert(c.dom(outArr) == c.initialObj);
+        assert(c.cod(outArr) == obj);
+        // check uniqueness
+        c.arrIter.filter(arr => (c.dom(arr) == c.initialObj && c.cod(arr) == obj))
+          .foreach(arr => assert(arr == outArr, "not unique"));
+      })
+    }
   }
 
 }
+
+
 /*
 trait SCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
 

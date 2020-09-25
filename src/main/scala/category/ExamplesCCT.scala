@@ -18,7 +18,7 @@ class FinSetCat [A] extends Category with CatWithInitial {
   override def comp = { case((gd, gf, gc), (fd, ff, fc)) => (fd, ff.andThen(gf), gc) }
   // Initial object
   override val initialObj = Set[A]();
-  override def io_outArr = (s: this.TObj) => (initialObj, (x: A) => x, s);
+  override def io_univ = (s: this.TObj) => (initialObj, (x: A) => x, s);
 } 
 
 /*
