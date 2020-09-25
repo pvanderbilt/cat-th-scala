@@ -3,6 +3,19 @@ package category
 //  CATEGORY CREATED FROM OTHER ONES
 
 /*
+ *  Dual category (see CCT section 3.6)
+ */
+
+class Dual (val c: Category) extends Category {
+  type TObj = c.TObj;
+  type TArr = c.TArr;
+  def dom = c.cod;
+  def cod = c.dom;
+  def id  = c.id;
+  def comp = { case (g, f) => c.comp(f, g) };
+}
+
+/*
  *  Product category
  */
 
