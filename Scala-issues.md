@@ -2,7 +2,8 @@
 ### Issues with Scala as a dependently typed PL
 
 This implementation attempts to implement category theory along the lines of
-Rydeheard and Burstall's [*Computational Category Theory*](http://www.cs.man.ac.uk/~david/categories/),
+Rydeheard and Burstall's [*Computational Category Theory*](http://www.cs.man.ac.uk/~david/categories/)
+(which I will refer to as __CCT__),
 but using Scala's abstract type members instead of type parameters.
 Scala goes a long way towards being dependently typed.
 In particular, it has objects with type members and path-dependent types.
@@ -114,19 +115,70 @@ But instead I made them members which does pretty much the same thing as what I 
 
 #### Duals
 
-__To be written__
+I wanted to define the dual of a category (aka "Op") and functor along the lines of CCT section 3.6.
+My first attempt at defining the categorical dual was as follows:
 
-    class DualFunctor (val F: Functor) extends Functor {  
-     // val C = new Dual(F.C);  
-     // val D = new Dual(F.D);  
+    class Dual (val c: Category) extends Category {
+      type TObj = c.TObj;
+      type TArr = c.TArr;
+      def dom = c.cod;
+      def cod = c.dom;
+      def id  = c.id;
+      def comp = { case (g, f) => c.comp(f, g) };
+    }
+
+Then the functorial dual was written as follows:
+
+    class DualFunctor (val F: Functor) extends Functor {
       val C = new Dual(F.C);
       val D = new Dual(F.D);
       def objMap = F.objMap;
       def arrMap = F.arrMap;
     }
 
-
-Error:
+However, this gave a bunch of errors like:
 
 	found   : DualFunctor.this.F.C.TObj => DualFunctor.this.F.D.TObj
 	required: DualFunctor.this.C.TObj => DualFunctor.this.D.TObj
+
+The basic problem is that `DualFunctor` yields an object where
+
+* `C` and `D` point to objects created by the `Dual` class,
+* `F` points to the source functor and `objMap` and `arrMap` point to the same-named members in `F`.
+* So `objMap` has type `F.C.TObj => F.D.TObj` and similarly for `arrMap`.
+
+However, the `Functor` trait expects them to be typed wrt the object being created.
+Focusing on `objMap`:
+* So it should be that `objMap` has type `this.C.TObj => this.D.TObj`.
+* Note that `this.C` is assigned from `new Dual(F.C)` and `new Dual(F.C).TObj` is assigned from `F.C.TObj`,
+* so `this.C.TObj` is equal to `F.C.TObj` and similarly for the sibling types.
+* So it seems that it should type.
+
+BUT the type of `new Dual(F.C)` is just `Category`
+and the `new Dual(F.C).TObj = F.C.TObj` connection is lost.  *Right?*
+ So `objMap` doesn't type.
+
+After messing around a bit, I came up with the following two functions:
+
+    def dualCat (c: Category): Category {
+        type TObj = c.TObj;
+        type TArr = c.TArr;
+      } = new Category {
+        type TObj = c.TObj;
+        type TArr = c.TArr;
+        def dom = c.cod;
+        def cod = c.dom;
+        def id  = c.id;
+        def comp = { case (g, f) => c.comp(f, g) };
+      }
+
+Note that `dualCat` explicitly specifies the connection that was lost as described above.
+
+      def dualFnctr (F: Functor): Functor = new Functor {
+        val C = dualCat(F.C);
+        val D = dualCat(F.D);
+        def objMap = F.objMap;
+        def arrMap = F.arrMap;
+      }
+
+*Is there a better way?*

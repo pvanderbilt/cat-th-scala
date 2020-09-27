@@ -91,6 +91,7 @@ abstract class Dual2 extends Category {
 }
 
 object DualFns {
+
   def dualCat (c: Category): Category {
     type TObj = c.TObj;
     type TArr = c.TArr;
