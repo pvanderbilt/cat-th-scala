@@ -8,8 +8,8 @@ package category
  */
 
 trait CatWithInitial extends Category {
-  val initialObj: this.TObj;
-  def io_univ: this.TObj => this.TArr;
+  val initialObj: TObj;
+  def io_univ: TObj => TArr;
 }
 
 
@@ -19,8 +19,8 @@ trait CatWithInitial extends Category {
 
 trait InitialObj {
   val C: Category
-  val io: C.TObj;
-  def univ: this.C.TObj => this.C.TArr;
+  val initialObj: C.TObj;
+  def io_univ: C.TObj => C.TArr;
 }
 
 
