@@ -8,15 +8,15 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
   def verify_finite_category(c: FiniteCat, name: String) = {
 
     test(name ++ ": Check iterators") {
-      c.objIter.foreach(obj => assert(c.objContains(obj)));
-      c.arrIter.foreach(arr => assert(c.arrContains(arr)));
+      c.objIter.foreach(obj => assert(c.objsContain(obj)));
+      c.arrIter.foreach(arr => assert(c.arrsContain(arr)));
     }
 
     test(name ++ ": Test id objects") {
       c.objIter.foreach(obj => {
         val idObj : c.TArr = c.id(obj);
         // info(s"  Check: c.id($obj) \t= $idObj")
-        assert(c.arrContains(idObj));
+        assert(c.arrsContain(idObj));
         assert(c.dom(idObj) === obj);
         assert(c.cod(idObj) === obj);
       })
@@ -36,7 +36,7 @@ trait FinCatTests extends AnyFunSuite with GivenWhenThen { this: AnyFunSuite =>
           if (c.cod(f) == c.dom(g)) {
             val res = c.comp(g, f);
             // info(s"  Check: comp($g, $f) \t= $res");
-            assert(c.arrContains(res));
+            assert(c.arrsContain(res));
             assert(c.dom(res) === c.dom(f));
             assert(c.cod(res) === c.cod(g));
           }

@@ -28,8 +28,8 @@ trait Category {
 trait FiniteCat extends Category {
   def objIter: Iterator[TObj];
   def arrIter: Iterator[TArr];
-  def objContains: TObj => Boolean;
-  def arrContains: TArr => Boolean;
+  def objsContain: TObj => Boolean;
+  def arrsContain: TArr => Boolean;
 } 
 
 
@@ -46,8 +46,8 @@ trait SCategory extends FiniteCat {
   // Implement FiniteCat methods
   def objIter = objects.iterator;
   def arrIter = arrows.iterator;
-  def objContains = objects.contains;
-  def arrContains = arrows.contains;
+  def objsContain = objects.contains;
+  def arrsContain = arrows.contains;
 }
 
 
