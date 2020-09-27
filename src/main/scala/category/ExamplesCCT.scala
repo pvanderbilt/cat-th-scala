@@ -7,23 +7,31 @@ import category.Category
  *   This corresponds to CCT's code of section 3.4.1
  *   `TObj` denotes sets of values of type A
  *   `TArr` denotes a set of (dom, A => A, cod) triples
+ *    Note that `comp` does not check that the arrows are compatible.
  */
 
-class FinSetCat [A] extends Category with CatWithInitial {
+class FinSetCat [A] extends Category {
   override type TObj = Set[A];
   override type TArr = (TObj, A => A, TObj);
-  override def dom = (arr: TArr) => arr._1;
-  override def cod = (arr: TArr) => arr._3;
+  override def dom = { case (a, _, _) => a };
+  override def cod = { case (_, _, b) => b };
   override def id = (s: TObj) => (s, (x: A) => x, s);
   override def comp = { case((gd, gf, gc), (fd, ff, fc)) => (fd, ff.andThen(gf), gc) }
-  // Initial object
-  override val initialObj = Set[A]();
-  override def io_univ = (s: this.TObj) => (initialObj, (x: A) => x, s);
 } 
 
+/*
+ * FinSetCatPlus[A]
+ *   FinSetCat [A] with the initial object specified
+ */
+
+class FinSetCatPlus [A] extends FinSetCat[A] with CatWithInitial {
+  // Initial object
+  override val initialObj = Set[A]();
+  override def io_univ = (s: TObj) => (initialObj, (x: A) => x, s);
+}
 
 /*
- * The following objects implement the finite category of CCT section 3.2.2
+ * The following objects implement the finite category of CCT sections 3.2.3 and 3.4.3
  */
 
 object cat323 extends SCategory {
