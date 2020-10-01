@@ -105,8 +105,8 @@ object DualFns {
   }
 
   def dualFnctr (F: Functor): Functor = new Functor {
-    val C = dualCat(F.C);
-    val D = dualCat(F.D);
+    val DomC = dualCat(F.DomC);
+    val CodC = dualCat(F.CodC);
     def objMap = F.objMap;
     def arrMap = F.arrMap;
   }

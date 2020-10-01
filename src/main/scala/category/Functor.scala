@@ -10,10 +10,17 @@ package category
 
 
 trait Functor {
-  val C: Category;
-  val D: Category;
-  def objMap: C.TObj => D.TObj;
-  def arrMap: C.TArr => D.TArr;
+  val DomC: Category;
+  val CodC: Category;
+  def objMap: DomC.TObj => CodC.TObj;
+  def arrMap: DomC.TArr => CodC.TArr;
+}
+
+class IdFunctor (val C: Category) extends Functor {
+  val DomC : Category { type TObj = C.TObj; type TArr = C.TArr } = C;
+  val CodC : Category { type TObj = C.TObj; type TArr = C.TArr } = C ;
+  val objMap = (obj: C.TObj) => obj;
+  val arrMap = (arr: C.TArr) => arr;
 }
 
 /*
