@@ -1,29 +1,65 @@
 package category
 
+object emptyCat extends FiniteCat {
+  type TObj = Nothing;
+  type TArr = Nothing;
+  def dom = (_) => throw new NotImplementedError; // x match {};
+  def cod = (_) => throw new NotImplementedError;
+  def id  = (_) => throw new NotImplementedError;
+  def comp = (_, _) => throw new NotImplementedError;
+  def objIter = Iterator();
+  def arrIter = Iterator();
+}
 
-/* TBD !!
-class FinSetCat2 extends Category with CatWithInitial {
-  class TObj {
-    type TObjBase;
-    val obj: Set[TObjBase];
+object unitCat extends FiniteCat {
+  type TObj = Unit;
+  type TArr = Unit;
+  def dom = (_) => ();
+  def cod = (_) => ();
+  def id = (_) => ();
+  def comp = (_, _) => ();
+  def objIter = Iterator(());
+  def arrIter = Iterator(());
+}
+
+class MonoidCat [A] (e: A, op: (A, A) => A) extends Category {
+  type TObj = Unit;
+  type TArr = A;
+  def dom = (_) => ();
+  def cod = (_) => ();
+  def id = (_) => e;
+  def comp = op;
+}
+
+object categories {
+
+  class BoolCat extends FiniteCat with CatWithInitial {
+    type TObj = Boolean;
+    type TArr = (Boolean, Boolean);
+    val arrows : Set[TArr] = Set((false, false), (false, true), (true, true));
+      // for { b <- Boolean.iterator } yield (b, b);
+    def dom = { case (d, _) => d };
+    def cod = { case (_, c) => c }
+    def id = (b) => (b, b);
+    def comp = { case ((gd, gc), (fd, fc)) => (fd, gc) };
+    def objIter = Iterator(false, true);
+    def arrIter = arrows.iterator;
+    val initialObj = false;
+    def io_univ    = (b: TObj) => (false, b);
   }
-  class TArr (
-    val dom: TObj,
-    val cod: TObj,
-    val func: dom.TObjBase => cod.TObjBase
-  ) {}
-  // override type TObj = Set[TObjBase];
-  // override type TArr = (TObj, TObjBase => TObjBase, TObj);
-  override def dom = (arr: TArr) => arr.dom;
-  override def cod = (arr: TArr) => arr.cod;
-  override def id = (s: TObj) => new TArr (s, s, (x: s.TObjBase) => x)
-  override def comp = (g: TArr, f: TArr) => (f._1, f._2.andThen(g._2), g._3);
-  override val initialObj = Set[TObjBase]();
-  override def io_outArr = (s: this.TObj) => (initialObj, (x: TObjBase) => x, s);
 
-  // def id (s: TObj) = (s, (_: TObjBase), s);
-  // def comp2 : (TArr, TArr) => TArr = {
-  //   case((gd, gf, gc), (fd, ff, fc)) => (fd, ff.andThen(gf), gc)
-  // }
-} 
- */
+  def boolCat2 (f: Boolean => Boolean) : Category = new Category {
+    type TObj = Boolean;
+    type TArr = (Boolean, Boolean);
+    def dom = { case (d, _) => d };
+    def cod = { case (_, c) => c }
+    def id = (b) => (b, b);
+    def comp = { case ((gd, gc), (fd, fc)) => (fd, gc) };
+  }
+
+  val boolEqMonCat = new MonoidCat(true, (x: Boolean, y: Boolean) => x&&y);
+  val u: boolEqMonCat.TObj = ();
+  val b: boolEqMonCat.TArr = false;
+
+  val boolCat = new BoolCat
+}

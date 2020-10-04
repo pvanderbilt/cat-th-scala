@@ -123,4 +123,11 @@ class FinCatSpec extends AnyFunSuite with FinCatTests {
   testsFor(verify_finite_category(cat323, "cat323"));
   testsFor(verify_finite_category(cat323b, "cat323b"));
   testsFor(verify_finite_category(cat323c, "cat323c"));
+  testsFor(verify_finite_category(categories.boolCat, "boolCat"));
+  testsFor(verify_finite_category(dualFns.dualFinCat(categories.boolCat), "boolCatDual"));
+  testsFor(verify_finite_category(emptyCat, "emptyCat"));
+  testsFor(verify_finite_category(unitCat, "unitCat"));
+  testsFor(verify_CatWithInitial(categories.boolCat, "boolCat"));
+
+
 }
