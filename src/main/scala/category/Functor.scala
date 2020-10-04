@@ -8,7 +8,6 @@ package category
  *    The remaining operations are those for the category.
  */
 
-
 trait Functor {
   val DomC: Category;
   val CodC: Category;
@@ -16,12 +15,21 @@ trait Functor {
   def arrMap: DomC.TArr => CodC.TArr;
 }
 
+
+/*
+ * IdFunctor
+ */
+
 class IdFunctor (val C: Category) extends Functor {
   val DomC : Category { type TObj = C.TObj; type TArr = C.TArr } = C;
   val CodC : Category { type TObj = C.TObj; type TArr = C.TArr } = C ;
   val objMap = (obj: C.TObj) => obj;
   val arrMap = (arr: C.TArr) => arr;
 }
+
+/*
+ * Other attempts at making functors and their duals work.  Not used.
+ */
 
 /*
 class DualFunctor (val F: Functor) extends Functor {
