@@ -28,8 +28,8 @@ class ProdFinCat (cp1: FiniteCat, cp2: FiniteCat) extends ProdCat(cp1, cp2) with
   override val c2 = cp2;
   def objIter = for {o1 <- c1.objIter; o2 <- c2.objIter} yield (o1, o2);
   def arrIter = for {a1 <- c1.arrIter; a2 <- c2.arrIter} yield (a1, a2);
-  def objsContain = {case (o1, o2) => c1.objsContain(o1) && c2.objsContain(o2)};
-  def arrsContain = {case (a1, a2) => c1.arrsContain(a1) && c2.arrsContain(a2)};
+  override def objsContain = {case (o1, o2) => c1.objsContain(o1) && c2.objsContain(o2)};
+  override def arrsContain = {case (a1, a2) => c1.arrsContain(a1) && c2.arrsContain(a2)};
 }
 
 /*
@@ -90,7 +90,7 @@ abstract class Dual2 extends Category {
   def comp = { case (g, f) => SrcCat.comp(f, g) };
 }
 
-object DualFns {
+object dualFns {
 
   def dualCat (c: Category): Category {
     type TObj = c.TObj;
@@ -110,6 +110,21 @@ object DualFns {
     def objMap = F.objMap;
     def arrMap = F.arrMap;
   }
+
+  def dualFinCat (c: FiniteCat): FiniteCat {
+    type TObj = c.TObj;
+    type TArr = c.TArr;
+  } = new FiniteCat {
+    type TObj = c.TObj;
+    type TArr = c.TArr;
+    def dom = c.cod;
+    def cod = c.dom;
+    def id  = c.id;
+    def comp = { case (g, f) => c.comp(f, g) };
+    def objIter = c.objIter;
+    def arrIter = c.arrIter;
+  }
+
 }
 
 /*
