@@ -1,5 +1,5 @@
-# Implementing category theory using virtual types
-### Issues with Scala as a dependently typed PL
+# Notes on implementing category theory using virtual types
+### Issues with attempting to use Scala as a fully dependently-typed PL
 
 The code given here is an attempt at implementing category theory along the lines of
 Rydeheard and Burstall's
