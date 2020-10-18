@@ -18,7 +18,7 @@ class FinSetCat [A] extends Category {
   def id = (s: TObj) => (s, (x: A) => x, s);
   def comp = { case ((gd, gf, gc), (fd, ff, fc)) => (fd, ff.andThen(gf), gc) }
   // helper functions
-  def afunc : TArr => A => A = { case (_, f, _) => f };
+  def arrFunc : TArr => A => A = { case (_, f, _) => f };
 } 
 
 /*
@@ -58,14 +58,14 @@ object FSCat extends FinSetCat[FSVal]
   def projR = (_: TObj, b: TObj, axb: TObj) =>
     (axb, { case Pair(_, y) => y; case _ => Error }, b)
   def prod_univ = (axb: TObj, c: TObj, f: TArr, g: TArr) =>
-    (c, (v: FSVal) => Pair(afunc(f)(v), afunc(g)(v)), axb);
+    (c, (v: FSVal) => Pair(arrFunc(f)(v), arrFunc(g)(v)), axb);
 
   // coproducts
   def coprod = (a: TObj, b: TObj) => a.map(Left) ++ b.map(Right)
   def injL   = (a: TObj, b: TObj, apb: TObj) => (a, Left, apb)
   def injR   = (a: TObj, b: TObj, apb: TObj) => (a, Right, apb)
   def coprod_univ = (apb: TObj, c: TObj, f: TArr, g: TArr) =>
-    (apb, { case Left(v) => afunc(f)(v); case Right(v) => afunc(g)(v) }, c)
+    (apb, { case Left(v) => arrFunc(f)(v); case Right(v) => arrFunc(g)(v) }, c)
  
 }
 
@@ -115,12 +115,21 @@ import finSetOps._
  * The χ functor on FinSetCat
  */
 
-class ChiFun [A] extends Functor {
-  val DomC = new FinSetCat[A];
-  val CodC = new FinSetCat[(A,A)];
-  def objMap = (a: Set[A]) => cartProd(a, a);
+// class ChiFun [A] extends Functor {
+//   val DomC = new FinSetCat[A];
+//   val CodC = new FinSetCat[(A,A)];
+//   def objMap = (a: Set[A]) => cartProd(a, a);
+//   def arrMap = { case (a, f, b) =>
+//     (cartProd(a, a), { case (x,y) => (f(x), f(y)) }, cartProd(b, b))
+//   }
+// }
+
+object chiFun extends Functor {
+  val DomC = FSCat;
+  val CodC = FSCat;
+  def objMap = (a: Set[FSVal]) => FSCat.prod(a, a);
   def arrMap = { case (a, f, b) =>
-    (cartProd(a, a), { case (x,y) => (f(x), f(y)) }, cartProd(b, b))
+    (FSCat.prod(a, a), { case Pair(x, y) => Pair(f(x), f(y)) }, FSCat.prod(b, b))
   }
 }
 
