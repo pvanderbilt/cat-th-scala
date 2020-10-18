@@ -1,11 +1,10 @@
 package category
 
 /*
- * Functor
- *    `TObj` and `TArr` are the Scala base types for object and arrows.
- *    A given category's objects may be all of TObj or some subset drawn from TObj;
- *    similarly for arrows.
- *    The remaining operations are those for the category.
+ * Functor: A mapping between categories
+ *   DomC and CodC are the domain and codomain categories
+ *   `objMap` maps DomC objects to CodC objects
+ *   `arrMap` maps DomC arrows  to CodC arrows
  */
 
 trait Functor {
@@ -15,16 +14,37 @@ trait Functor {
   def arrMap: DomC.TArr => CodC.TArr;
 }
 
+object functorOps {
 
-/*
- * IdFunctor
- */
+  /*
+   * Identity Functor 
+   */
 
-class IdFunctor (val C: Category) extends Functor {
-  val DomC : Category { type TObj = C.TObj; type TArr = C.TArr } = C;
-  val CodC : Category { type TObj = C.TObj; type TArr = C.TArr } = C ;
-  val objMap = (obj: C.TObj) => obj;
-  val arrMap = (arr: C.TArr) => arr;
+  def functorId (C: Category): Functor = new Functor {
+    val DomC: Category { type TObj = C.TObj; type TArr = C.TArr } = C;
+    val CodC: Category { type TObj = C.TObj; type TArr = C.TArr } = C ;
+    val objMap = (obj: C.TObj) => obj;
+    val arrMap = (arr: C.TArr) => arr;
+  }
+
+  /*
+   * Functor composition
+   *   F: A --> B, G: B --> C
+   */
+
+  def functorComp [B_TObj, B_TArr] (
+    G: Functor { val DomC : Category { type TObj = B_TObj; type TArr = B_TArr }},
+    F: Functor { val CodC : Category { type TObj = B_TObj; type TArr = B_TArr }}
+  ) : Functor = new Functor {
+    val DomC: Category { type TObj = F.DomC.TObj; type TArr = F.DomC.TArr } = F.DomC;
+    val CodC: Category { type TObj = G.CodC.TObj; type TArr = G.CodC.TArr } = G.CodC;
+    def objMap = (obj: F.DomC.TObj) => G.objMap(F.objMap(obj));
+    def arrMap = (arr: F.DomC.TArr) => G.arrMap(F.arrMap(arr));
+  }
+
+}
+
+object exampleFunctors {
 }
 
 /*
