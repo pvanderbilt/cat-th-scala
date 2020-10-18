@@ -1,4 +1,5 @@
-package category
+package category.examples
+import category._
 
 object emptyCat extends FiniteCat {
   type TObj = Nothing;
@@ -31,23 +32,23 @@ class MonoidCat [A] (e: A, op: (A, A) => A) extends Category {
   def comp = op;
 }
 
+object boolCat extends FiniteCat with CatWithInitial {
+  type TObj = Boolean;
+  type TArr = (Boolean, Boolean);
+  val arrows : Set[TArr] = Set((false, false), (false, true), (true, true));
+  def dom = { case (d, _) => d };
+  def cod = { case (_, c) => c }
+  def id = (b) => (b, b);
+  def comp = { case ((gd, gc), (fd, fc)) => (fd, gc) };
+  def objIter = Iterator(false, true);
+  def arrIter = arrows.iterator;
+  val initialObj = false;
+  def io_univ    = (b: TObj) => (false, b);
+}
+
 object categories {
 
-  class BoolCat extends FiniteCat with CatWithInitial {
-    type TObj = Boolean;
-    type TArr = (Boolean, Boolean);
-    val arrows : Set[TArr] = Set((false, false), (false, true), (true, true));
-      // for { b <- Boolean.iterator } yield (b, b);
-    def dom = { case (d, _) => d };
-    def cod = { case (_, c) => c }
-    def id = (b) => (b, b);
-    def comp = { case ((gd, gc), (fd, fc)) => (fd, gc) };
-    def objIter = Iterator(false, true);
-    def arrIter = arrows.iterator;
-    val initialObj = false;
-    def io_univ    = (b: TObj) => (false, b);
-  }
-
+  // Incomplete and not currently used
   def boolCat2 (f: Boolean => Boolean) : Category = new Category {
     type TObj = Boolean;
     type TArr = (Boolean, Boolean);
@@ -61,5 +62,4 @@ object categories {
   val u: boolEqMonCat.TObj = ();
   val b: boolEqMonCat.TArr = false;
 
-  val boolCat = new BoolCat
 }

@@ -1,4 +1,5 @@
-package category
+package category.examples
+import category._
 
 // import category.Category
 
@@ -88,10 +89,10 @@ object cat323c extends SimpleFinCat {
     ("b", "f", "a"),
     ("a", "g", "c"),
     ("a", "h", "c"),
-    ("b", "k", "c"),
-    // closure
-    ("b", "f;g", "c"),
-    ("b", "f;h", "c"));
+    ("b", "k", "c"));
+    // // closure
+    // ("b", "f;g", "c"),
+    // ("b", "f;h", "c")
   val arrows =
     baseArrows.map { case (d, f, c) => (d, List(f), c) } ++
     objects.map { case obj => (obj, List(), obj) } ++
