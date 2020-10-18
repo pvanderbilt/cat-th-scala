@@ -35,13 +35,38 @@ object functorOps {
   def functorComp [B_TObj, B_TArr] (
     G: Functor { val DomC : Category { type TObj = B_TObj; type TArr = B_TArr }},
     F: Functor { val CodC : Category { type TObj = B_TObj; type TArr = B_TArr }}
-  ) : Functor = new Functor {
+  ) : Functor {
+    val DomC: Category { type TObj = F.DomC.TObj; type TArr = F.DomC.TArr };
+    val CodC: Category { type TObj = G.CodC.TObj; type TArr = G.CodC.TArr };
+  } = new Functor {
     val DomC: Category { type TObj = F.DomC.TObj; type TArr = F.DomC.TArr } = F.DomC;
     val CodC: Category { type TObj = G.CodC.TObj; type TArr = G.CodC.TArr } = G.CodC;
     def objMap = (obj: F.DomC.TObj) => G.objMap(F.objMap(obj));
     def arrMap = (arr: F.DomC.TArr) => G.arrMap(F.arrMap(arr));
   }
 
+  def functorComp2 (
+    A: Category,
+    B: Category,
+    C: Category
+  ) (
+    G: Functor {
+      val DomC : Category { type TObj = B.TObj; type TArr = B.TArr }
+      val CodC : Category { type TObj = C.TObj; type TArr = C.TArr }
+    },
+    F: Functor {
+      val DomC : Category { type TObj = A.TObj; type TArr = A.TArr }
+      val CodC : Category { type TObj = B.TObj; type TArr = B.TArr }
+    }
+  ) : Functor {
+    val DomC: Category { type TObj = A.TObj; type TArr = A.TArr };
+    val CodC: Category { type TObj = C.TObj; type TArr = C.TArr };
+  } = new Functor {
+    val DomC: Category { type TObj = A.TObj; type TArr = A.TArr } = A;
+    val CodC: Category { type TObj = C.TObj; type TArr = C.TArr } = C;
+    def objMap = (obj: A.TObj) => G.objMap(F.objMap(obj));
+    def arrMap = (arr: A.TArr) => G.arrMap(F.arrMap(arr));
+  }
 }
 
 object exampleFunctors {
