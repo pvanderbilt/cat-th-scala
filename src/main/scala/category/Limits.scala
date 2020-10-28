@@ -35,6 +35,7 @@ trait CatWithColimits extends CatWithCocones {
 /*
  * LIMITS
  */
+
 trait CatWithCones extends CatWithDiagrams { C =>
   trait Cone {
     val apex: TObj;

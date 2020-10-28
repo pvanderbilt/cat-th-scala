@@ -26,7 +26,7 @@ class FinSetCat [A] extends Category {
  */
 
 trait FSVal;
-// case object Empty extends FinSet;
+
 case object Unit extends FSVal;
 case class IntLit (n: Int) extends FSVal;
 case class Left  (s: FSVal) extends FSVal;
