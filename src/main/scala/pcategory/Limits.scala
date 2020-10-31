@@ -27,13 +27,13 @@ trait Diagram [TObj, TArr] {
  */
 
 trait Cocone [TObj, TArr] {
-  val C: Category[TObj, TArr];
-  val base: Diagram[TObj, TArr];
-  def coapex: TObj;
-  def inj : TObj => TArr; // n: nodes => n -> coapex
+  val hostCat: Category[TObj, TArr];
+  val base:    Diagram[TObj, TArr];
+  def coapex:  TObj;
+  def inj :    TObj => TArr; // n: nodes => n -> coapex
 
   def checkCoconeFacesComm (edge: TArr): Boolean =
-    (inj(C.dom(edge)) == C.comp(inj(C.cod(edge)), edge))
+    (inj(hostCat.dom(edge)) == hostCat.comp(inj(hostCat.cod(edge)), edge))
 }
 
 
@@ -45,7 +45,7 @@ trait Colimit [TObj, TArr] extends Cocone[TObj, TArr] {
   def univ : Cocone[TObj, TArr] => TArr; // cc: Cocone => this.coapex -> cc.coapex
 
   def checkUnivTrianglesComm (cc: Cocone[TObj, TArr], node: TObj): Boolean =
-    (cc.inj(node) == C.comp(univ(cc), inj(coapex)))
+    (cc.inj(node) == hostCat.comp(univ(cc), inj(coapex)))
 }
 
 trait Cocomplete [TObj, TArr] {
@@ -69,13 +69,13 @@ trait PCatWithDiagrams [TObj, TArr] extends Category[TObj, TArr] {
 }
 
 trait Cocone2 [TObj, TArr] {
-  val C: PCatWithDiagrams[TObj, TArr];
-  val base: C.Diagram;
+  val hostCat: PCatWithDiagrams[TObj, TArr];
+  val base: hostCat.Diagram;
   def coapex: TObj;
   def inj : TObj => TArr; // n: nodes => n -> coapex
 
   def checkCoconeFacesComm (edge: TArr): Boolean =
-    (inj(C.dom(edge)) == C.comp(inj(C.cod(edge)), edge))
+    (inj(hostCat.dom(edge)) == hostCat.comp(inj(hostCat.cod(edge)), edge))
 }
 
 trait Cocomplete2 [TObj, TArr] extends PCatWithDiagrams[TObj, TArr] {
@@ -89,13 +89,13 @@ trait Cocomplete2 [TObj, TArr] extends PCatWithDiagrams[TObj, TArr] {
 //     //val base: Diagram;
 //     val inj : TObj => TArr; // n: nodes => n -> coapex
 //     def coconeFaceComms (edge: TArr): Boolean =
-//       (inj(dom(edge)) == C.comp(inj(cod(edge)), edge))
+//       (inj(dom(edge)) == hostCat.comp(inj(cod(edge)), edge))
 //   }
 
 //   abstract class Colimit (base: Diagram) extends Cocone(base) {
 //     val univ : Cocone => TArr; // cc: Cocone => this -> cc
 //     def univTriComms (cc: Cocone, node: TObj): Boolean = 
-//       (cc.inj(node) == C.comp(univ(cc), inj(coapex)))
+//       (cc.inj(node) == hostCat.comp(univ(cc), inj(coapex)))
 //   }
 
 //   trait HasColimits {

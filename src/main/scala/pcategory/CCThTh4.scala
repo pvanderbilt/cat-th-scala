@@ -7,16 +7,16 @@ import pcategory.limits._
 /*
  * CCT Theorem 4, section 5.5, p 129: 
  *   For C and cocomplete D, their functor cat is cocomplete
- *     So, forall cats C1 & D1, where D1 is cocomplete,
- *     FC_Cocomplete(C1, D1) is a subclass of FunctorCat(C1, D1) 
+ *     So, forall cats C & D, where D is cocomplete,
+ *     FC_Cocomplete(C, D) is a subclass of FunctorCat(C, D) 
  *     that implements Cocomplete
  */
 
 class FC_Cocomplete [C_TObj, C_TArr, D_TObj, D_TArr] (
-  C1: Category[C_TObj, C_TArr],
-  D1: Category[D_TObj, D_TArr] with Cocomplete[D_TObj, D_TArr]
+  C: Category[C_TObj, C_TArr],
+  D: Category[D_TObj, D_TArr] with Cocomplete[D_TObj, D_TArr]
 )
-    extends FunctorCat(C1, D1) with Cocomplete[Functor[C_TObj, C_TArr, D_TObj, D_TArr],
+    extends FunctorCat(C, D) with Cocomplete[Functor[C_TObj, C_TArr, D_TObj, D_TArr],
       NatTrans[C_TObj, C_TArr, D_TObj, D_TArr]]
 {  FC =>
 
@@ -34,29 +34,29 @@ class FC_Cocomplete [C_TObj, C_TArr, D_TObj, D_TArr] (
     d.nodes.map(F => F.arrMap(f))
 
   def colimitAt (a: C_TObj, d: Diagram[FC_TObj, FC_TArr]) : Colimit[D_TObj, D_TArr] =
-    D1.colimit(diagAt(a, d))
+    D.colimit(diagAt(a, d))
 
   def colimit (d: Diagram[FC_TObj, FC_TArr]) = new Colimit[FC_TObj, FC_TArr] {
-    val C = FC
+    val hostCat = FC
     val base = d
     // coapex: FC obj, so functor C --> D
     def coapex = new Functor[C_TObj, C_TArr, D_TObj, D_TArr] {
-      val DomC = C1
-      val CodC = D1
+      val DomC = C
+      val CodC = D
       def objMap = a => colimitAt(a, d).coapex
       def arrMap = f => {
-        val a = C1.dom(f)
-        val b = C1.cod(f)
+        val a = C.dom(f)
+        val b = C.cod(f)
         // need: D arrow, colimitAt(a, d).coapex --> colimitAt(b, d).coapex
         // create images of d
         val da = diagAt(a, d)
         val db = diagAt(b, d)
         // create colimits in D
-        val cla = D1.colimit(da)
-        val clb = D1.colimit(db)
+        val cla = D.colimit(da)
+        val clb = D.colimit(db)
         // rebase clb to da
         val ccbRebased = new Cocone[D_TObj, D_TArr] {
-          val C = D1
+          val hostCat = D
           val base = da
           def coapex = clb.coapex
           // injMap : Map((n: D), n --> clb.coapex)
@@ -71,8 +71,8 @@ class FC_Cocomplete [C_TObj, C_TArr, D_TObj, D_TArr] (
     }
     // inj: (n: diag.Nodes) => n --> coapex
     def inj = (n: FC_TObj) => new NatTrans[C_TObj, C_TArr, D_TObj, D_TArr] {
-      val DomC = C1
-      val CodC = D1
+      val DomC = C
+      val CodC = D
       val DomF = n
       val CodF = coapex
       def component = (a: C_TObj) => colimitAt(a, d).inj(n.objMap(a))
@@ -80,14 +80,14 @@ class FC_Cocomplete [C_TObj, C_TArr, D_TObj, D_TArr] (
     // univ: (cc: Cocone) => coapex --> cc.coapex (an NT)
     def univ = (cc: Cocone[FC_TObj, FC_TArr]) =>
       new NatTrans[C_TObj, C_TArr, D_TObj, D_TArr] {
-        val DomC = C1
-        val CodC = D1
+        val DomC = C
+        val CodC = D
         val DomF = coapex
         val CodF = cc.coapex
         def component = (a: C_TObj) => {
           // need D Arr: coapex(a) --> cc.coapex(a)
           val ccInD = new Cocone[D_TObj, D_TArr] {
-            val C = D1
+            val hostCat = D
             val base = diagAt(a, d)
             val coapex = cc.coapex.objMap(a)
             val inj = Map.from(d.edges.map(e => (FC.dom(e).objMap(a), e.component(a))))
