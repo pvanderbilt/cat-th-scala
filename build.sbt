@@ -10,8 +10,7 @@ lazy val category = (project in file("."))
 scalacOptions := Seq("-unchecked", "-deprecation")
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-// ThisBuild / watchTriggers := Seq(Glob("src/main/scala/category/[^#].*"))
-
 ThisBuild  / watchBeforeCommand := Watch.clearScreen
 
-// watchSources := watchSources.value.filter { !_.getName.startsWith(".#") }
+// exclude emacs temp files from triggering recompilation
+excludeFilter := ".#*"
