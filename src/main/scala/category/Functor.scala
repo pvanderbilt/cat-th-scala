@@ -45,6 +45,11 @@ object functorOps {
     def arrMap = (arr: F.DomC.TArr) => G.arrMap(F.arrMap(arr));
   }
 
+  /*
+   * Functor composition, experimental alternative
+   *   F: A --> B, G: B --> C
+   */
+
   def functorComp2 (
     A: Category,
     B: Category,
