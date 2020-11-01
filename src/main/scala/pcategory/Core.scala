@@ -25,8 +25,21 @@ trait Category [TObj, TArr] {
     comp(f, id(dom(f))) == f && comp(id(cod(f)), f) == f
 }
 
-// -------------------------------- CATEGORIES --------------------------------
+// -------------------------------- Category operations --------------------------------
 
+object catOps {
+
+  def dualCat[TObj, TArr] (C: Category[TObj, TArr]): Category[TObj, TArr] =
+    new Category[TObj, TArr] {
+      def dom = C.cod
+      def cod = C.dom
+      def id  = C.id
+      def comp = { case (g, f) => C.comp(f, g) }
+    }
+
+}
+
+// -------------------------------- CATEGORIES --------------------------------
 /*
  * FinSetCat: Category of finite sets
  */
