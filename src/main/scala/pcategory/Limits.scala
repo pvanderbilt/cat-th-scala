@@ -48,8 +48,45 @@ trait Colimit [TObj, TArr] extends Cocone[TObj, TArr] {
     (cc.inj(node) == hostCat.comp(univ(cc), inj(coapex)))
 }
 
-trait Cocomplete [TObj, TArr] {
+
+/*
+ * CocompleteCat: a category with colimits for all diagrams
+ */
+
+trait CocompleteCat [TObj, TArr] extends Category[TObj,TArr] {
   def colimit (d: Diagram[TObj, TArr]): Colimit[TObj, TArr]
+}
+
+// -------------------------------- LIMITS --------------------------------
+
+/*
+ * Cone: for a given base (a diagram), a cocone has an apex and 
+ *   projections from the apex to the base
+ */
+
+trait Cone [TObj, TArr] {
+  val hostCat: Category[TObj, TArr];
+  val base:    Diagram[TObj, TArr];
+  def apex:    TObj;
+  def proj :   TObj => TArr; // n: nodes => apex -> n
+}
+
+
+/*
+ * Limit: a cone is a limit if it has the appropriate universal property
+ */
+
+trait Limit [TObj, TArr] extends Cone[TObj, TArr] {
+  def univ : Cone[TObj, TArr] => TArr; // c: Cone => c.apex -> this.apex
+}
+
+
+/*
+ * CompleteCat: a category with limits for all diagrams
+ */
+
+trait CompleteCat [TObj, TArr] extends Category[TObj,TArr] {
+  def limit (d: Diagram[TObj, TArr]): Limit[TObj, TArr]
 }
 
 
@@ -57,7 +94,7 @@ trait Cocomplete [TObj, TArr] {
 // -------------------------------- Experiments --------------------------------
 
 /*
- * An attempt to put things with the scope of parameters TObja dn TArr,
+ * An attempt to put things within the scope of parameters TObj and TArr,
  *   so that they don't have to be repeated over and over.
  */
 
@@ -67,21 +104,6 @@ trait PCatWithDiagrams [TObj, TArr] extends Category[TObj, TArr] {
     def edges: Set[TArr];
   }
 }
-
-trait Cocone2 [TObj, TArr] {
-  val hostCat: PCatWithDiagrams[TObj, TArr];
-  val base: hostCat.Diagram;
-  def coapex: TObj;
-  def inj : TObj => TArr; // n: nodes => n -> coapex
-
-  def checkCoconeFacesComm (edge: TArr): Boolean =
-    (inj(hostCat.dom(edge)) == hostCat.comp(inj(hostCat.cod(edge)), edge))
-}
-
-trait Cocomplete2 [TObj, TArr] extends PCatWithDiagrams[TObj, TArr] {
-  def colimit (d: this.Diagram): Colimit[TObj, TArr]
-}
-
 
 // trait ColimitsDefs [TObj, TArr] extends PCatWithDiagrams[TObj, TArr]  { C =>
 //   abstract class Cocone (val base: Diagram) {
