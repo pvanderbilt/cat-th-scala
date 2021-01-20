@@ -14,9 +14,9 @@ import pcategory.limits._
 
 class FC_Cocomplete [C_TObj, C_TArr, D_TObj, D_TArr] (
   C: Category[C_TObj, C_TArr],
-  D: Category[D_TObj, D_TArr] with Cocomplete[D_TObj, D_TArr]
+  D: Category[D_TObj, D_TArr] with CocompleteCat[D_TObj, D_TArr]
 )
-    extends FunctorCat(C, D) with Cocomplete[Functor[C_TObj, C_TArr, D_TObj, D_TArr],
+    extends FunctorCat(C, D) with CocompleteCat[Functor[C_TObj, C_TArr, D_TObj, D_TArr],
       NatTrans[C_TObj, C_TArr, D_TObj, D_TArr]]
 {  FC =>
 
