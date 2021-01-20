@@ -53,12 +53,40 @@ object functorOps {
       def objMap = (obj: A_TObj) => G.objMap(F.objMap(obj));
       def arrMap = (arr: A_TArr) => G.arrMap(F.arrMap(arr));
     }
+
+  /*
+   * Constant Functor
+   *   constFunctor(C, D, d): Functor from C to D mapping everything to d
+   */
+
+  def constFunctor[C_TObj, C_TArr, D_TObj, D_TArr] (
+    C: Category[C_TObj, C_TArr],
+    D: Category[D_TObj, D_TArr],
+    d: D_TObj
+  ): Functor[C_TObj, C_TArr, D_TObj, D_TArr] =
+    new Functor[C_TObj, C_TArr, D_TObj, D_TArr] {
+      val DomC = C;
+      val CodC = D;
+      def objMap = (_) => d
+      def arrMap = (_) => D.id(d)
+    }
+
+  /*
+   * Functor K: 1 -> C, mapping everything to c
+   */
+
+  def kFunctor[C_TObj, C_TArr] (
+    C: Category[C_TObj, C_TArr],
+    c: C_TObj
+  ): Functor[Unit, Unit, C_TObj, C_TArr] = constFunctor(pcategory.cats.oneCat, C, c)
+
 }
 
-// -------------------------------- Natural Transformations --------------------------------
+// ---------------------------- Natural Transformations ----------------------------
 
 /*
- * PNatTrans: A natural transformation is a set of arrows between functor endpoints
+ * PNatTrans: A natural transformation is a set of arrows 
+ *  between functor endpoints
  *   NT : F --> G = (x: C) => F(x) --> G(x) 
  */
 
@@ -138,10 +166,11 @@ object natTransOps {
 
 // -------------------------------- Category of Functors --------------------------------
 
-  /*
-   * The functor category (between two categories C and D) has 
-   *   functors (C-->D) as objects and NTs as arrows
-   */
+/*
+ * FunctorCat(C, D): The functor category, [C, D] 
+ *   The category of functors between categories C and D
+ *   It has functors (C-->D) as objects and NTs as arrows
+ */
 
 class FunctorCat [C_TObj, C_TArr, D_TObj, D_TArr] (
   val C: Category[C_TObj, C_TArr],
