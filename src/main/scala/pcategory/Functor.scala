@@ -78,7 +78,7 @@ object functorOps {
   def kFunctor[C_TObj, C_TArr] (
     C: Category[C_TObj, C_TArr],
     c: C_TObj
-  ): Functor[Unit, Unit, C_TObj, C_TArr] = constFunctor(pcategory.cats.oneCat, C, c)
+  ): Functor[Unit, Unit, C_TObj, C_TArr] = constFunctor(pcategory.cats.unitCat, C, c)
 
 }
 
