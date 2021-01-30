@@ -24,6 +24,7 @@ trait Functor [C_TObj, C_TArr, D_TObj, D_TArr]{
 }
 
 object functorOps {
+  import pcategory.core.catOps._
 
   /*
    * Identity Functor 
@@ -80,6 +81,19 @@ object functorOps {
     c: C_TObj
   ): Functor[Unit, Unit, C_TObj, C_TArr] = constFunctor(pcategory.cats.unitCat, C, c)
 
+  /*
+   * Dual of a functor: Dual(F: A --> B): dual(A) --> dual(B)
+   */
+
+  def dualFunctor [A_TObj, A_TArr, B_TObj, B_TArr] (
+    F: Functor[A_TObj, A_TArr, B_TObj, B_TArr]
+  ): Functor[A_TObj, A_TArr, B_TObj, B_TArr] =
+    new Functor[A_TObj, A_TArr, B_TObj, B_TArr] {
+      val DomC = dualCat(F.DomC)
+      val CodC = dualCat(F.CodC)
+      def objMap = F.objMap
+      def arrMap = F.arrMap
+    }
 }
 
 // ---------------------------- Natural Transformations ----------------------------
